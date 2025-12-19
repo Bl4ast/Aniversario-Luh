@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aniversário da Luhtaki</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #12001a, #2b1055, #1a0f2e);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Fundo estrelas */
+.stars {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(white 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.15;
+  animation: moveStars 60s linear infinite;
+  z-index: 1;
+}
+
+@keyframes moveStars {
+  to { background-position: 1000px 1000px; }
+}
+
+/* Container */
+.container {
+  position: relative;
+  z-index: 3;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  width: 90%;
+  max-width: 520px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+h1 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.timer {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.time-box {
+  background: rgba(255,255,255,0.15);
+  padding: 18px 10px;
+  border-radius: 18px;
+}
+
+.time-box span {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Mensagem piscando */
+.message {
+  display: none;
+  margin-top: 20px;
+  font-size: 1.15rem;
+  color: #ffd6ff;
+  animation: glow 1.5s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #ff9cff; }
+  to { text-shadow: 0 0 25px #ffffff; }
+}
+
+/* Chuva de estrelas */
+.star-rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  z-index: 5;
+}
+
+.falling-star {
+  position: absolute;
+  width: 2px;
+  height: 80px;
+  background: linear-gradient(180deg, white, transparent);
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  to { transform: translateY(110vh); opacity: 0; }
+}
+
+/* Galáxias */
+.galaxy-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  z-index: 4;
+}
+
+.galaxy {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255,255,255,0.9),
+    rgba(180,120,255,0.6),
+    rgba(80,0,150,0.25),
+    transparent 70%);
+  animation: floatGalaxy linear infinite;
+}
+
+@keyframes floatGalaxy {
+  from { transform: translateY(120vh) rotate(0deg) scale(0.7); opacity:0; }
+  20% { opacity:1; }
+  to { transform: translateY(-300px) rotate(360deg) scale(1.3); opacity:0; }
+}
+
+/* Emojis voando */
+.emoji-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+  z-index: 6;
+}
+
+.emoji {
+  position: absolute;
+  font-size: 24px;
+  animation: floatEmoji linear infinite;
+}
+
+@keyframes floatEmoji {
+  from { transform: translateY(110vh); opacity: 1; }
+  to { transform: translateY(-100px); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="stars"></div>
+<div class="galaxy-layer" id="galaxyLayer"></div>
+<div class="star-rain" id="starRain"></div>
+<div class="emoji-layer" id="emojiLayer"></div>
+
+<div class="container">
+  <h1>🎉 Aniversário da Luhtaki 🎉</h1>
+
+  <div class="timer">
+    <div class="time-box"><span id="days">00</span><small>DIAS</small></div>
+    <div class="time-box"><span id="hours">00</span><small>HORAS</small></div>
+    <div class="time-box"><span id="minutes">00</span><small>MIN</small></div>
+    <div class="time-box"><span id="seconds">00</span><small>SEG</small></div>
+  </div>
+
+  <div class="message" id="message">
+    ⭐ TE AMO LUHH ⭐<br>
+    💖 FELIZ ANIVERSÁRIO 💖<br>
+    VOCÊ É INCRÍVEL 💫<br><br>
+    💜 Ano que vem o site vai ser melhor, prometo 💜
+  </div>
+</div>
+
+<script>
+const birthday = new Date(2025,11,19,0,0,0);
+
+const ids = id => document.getElementById(id);
+const daysEl = ids('days');
+const hoursEl = ids('hours');
+const minutesEl = ids('minutes');
+const secondsEl = ids('seconds');
+const messageEl = ids('message');
+const starRain = ids('starRain');
+const galaxyLayer = ids('galaxyLayer');
+const emojiLayer = ids('emojiLayer');
+
+let started = false;
+
+function updateTimer(){
+  const diff = birthday - new Date();
+  if(diff <= 0 && !started){
+    started = true;
+    messageEl.style.display = 'block';
+    starRain.style.display = 'block';
+    galaxyLayer.style.display = 'block';
+    emojiLayer.style.display = 'block';
+    startStars();
+    startGalaxies();
+    startEmojis();
+  }
+
+  if(diff > 0){
+    daysEl.textContent = String(Math.floor(diff/86400000)).padStart(2,'0');
+    hoursEl.textContent = String(diff/3600000%24|0).padStart(2,'0');
+    minutesEl.textContent = String(diff/60000%60|0).padStart(2,'0');
+    secondsEl.textContent = String(diff/1000%60|0).padStart(2,'0');
+  }
+}
+
+function startStars(){
+  setInterval(()=>{
+    const s = document.createElement('div');
+    s.className='falling-star';
+    s.style.left=Math.random()*100+'vw';
+    s.style.animationDuration=1.5+Math.random()*2+'s';
+    starRain.appendChild(s);
+    setTimeout(()=>s.remove(),3000);
+  },120);
+}
+
+function startGalaxies(){
+  setInterval(()=>{
+    const g=document.createElement('div');
+    g.className='galaxy';
+    g.style.left=Math.random()*100+'vw';
+    g.style.animationDuration=12+Math.random()*10+'s';
+    galaxyLayer.appendChild(g);
+    setTimeout(()=>g.remove(),22000);
+  },2000);
+}
+
+function startEmojis(){
+  const emojis=['⭐','💖','💫','💜','✨'];
+  setInterval(()=>{
+    const e=document.createElement('div');
+    e.className='emoji';
+    e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    e.style.left=Math.random()*100+'vw';
+    e.style.animationDuration=4+Math.random()*4+'s';
+    emojiLayer.appendChild(e);
+    setTimeout(()=>e.remove(),8000);
+  },200);
+}
+
+updateTimer();
+setInterval(updateTimer,1000);
+</script>
+
+</body>
+</html>
